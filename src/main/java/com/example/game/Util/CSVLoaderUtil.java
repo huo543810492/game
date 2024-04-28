@@ -1,5 +1,7 @@
 package com.example.game.Util;
 
+import com.example.game.dao.CSVImportStatusDao;
+import com.example.game.model.CSVImportStatus;
 import com.example.game.model.GameSales;
 import com.example.game.service.GameSalesService;
 import com.opencsv.CSVReader;
@@ -16,6 +18,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,7 +31,10 @@ public class CSVLoaderUtil {
     private static final int BATCH_SIZE = 10000;
 
     @Autowired
-    GameSalesService GameSalesServiceImpl;
+    GameSalesService gameSalesServiceImpl;
+
+    @Autowired
+    CSVImportStatusDao csvImportStatusDao;
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("d/M/yyyy HH:mm:ss");
 
@@ -49,13 +55,17 @@ public class CSVLoaderUtil {
             try (CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(inputStream)).build()) {
                 String[] nextRecord;
                 log.info(Thread.currentThread().getName() + " start load csv file, one batch");
+                Long startId = 0L;
                 while ((nextRecord = csvReader.readNext()) != null) {
                     GameSales sales = mapToGameSales(nextRecord);
                     salesRecords.add(sales);
+                    //track csv Import Status
+                    if(count==0){
+                        startId = sales.getId();
+                    }
                     count++;
                     if (count >= BATCH_SIZE) {
-                        List<GameSales> batch = new ArrayList<>(salesRecords);
-                        futures.add(executor.submit(() -> GameSalesServiceImpl.saveBatch(batch)));
+                        submitBatch(executor, salesRecords, futures, startId, sales.getId());
                         salesRecords.clear();
                         count = 0;
                         log.info(Thread.currentThread().getName() + " load csv file one batch done");
@@ -84,6 +94,18 @@ public class CSVLoaderUtil {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    private void submitBatch(ExecutorService executor, List<GameSales> salesRecords, List<Future<?>> futures, Long startId, Long endId) {
+        List<GameSales> batch = new ArrayList<>(salesRecords);
+        CSVImportStatus csvImportStatus = new CSVImportStatus();
+        csvImportStatus.setStartId(startId);
+        csvImportStatus.setEndId(endId);
+        csvImportStatus.setCreateTime(new Date());
+        csvImportStatusDao.insert(csvImportStatus);
+        futures.add(executor.submit(() -> gameSalesServiceImpl.saveBatch(batch)));
+        log.info("Submitted a batch for processing.");
     }
 
     private GameSales mapToGameSales(String[] fields) throws ParseException {

@@ -29,5 +29,15 @@ KEY `idx_game_no` (`game_no`) USING BTREE,
 KEY `idx_date_of_sale` (`date_of_sale`) USING BTREE,
 KEY `idx_sale_price` (`sale_price`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `csv_import_status` (
+`id` bigint(20) NOT NULL,
+`start_id` bigint(20) NOT NULL,
+`end_id` bigint(20) NOT NULL,
+`create_time` datetime NOT NULL,
+PRIMARY KEY (`id`),
+KEY `idx_start_end` (`start_id`, `end_id`) USING BTREE,
+KEY `idx_create_time` (`create_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 

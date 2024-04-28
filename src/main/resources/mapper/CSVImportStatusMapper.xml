@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.game.dao.CSVImportStatusDao">
+
+    <resultMap id="resultMap" type="com.example.game.model.CSVImportStatus">
+        <id column="id" property="id"/>
+        <result column="start_id" property="startId"/>
+        <result column="end_id" property="endId"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+</mapper>
