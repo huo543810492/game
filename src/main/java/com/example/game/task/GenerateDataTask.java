@@ -36,8 +36,8 @@ public class GenerateDataTask {
             salesRecord.setCostPrice(new BigDecimal(random.nextInt(100) + 1));
             salesRecord.setTax(new BigDecimal("9.00"));
             salesRecord.setSalePrice(new BigDecimal(random.nextInt(100) + 1));
-            salesRecord.setDate(generateRandomDateInApril());
-            salesRecord.setCreate_time(new Date());
+            salesRecord.setDateOfSale(generateRandomDateInApril());
+            salesRecord.setCreateTime(new Date());
 
             batch.add(salesRecord);
         }
@@ -55,7 +55,6 @@ public class GenerateDataTask {
         calendar.set(Calendar.HOUR_OF_DAY, random.nextInt(24));
         calendar.set(Calendar.MINUTE, random.nextInt(60));
         calendar.set(Calendar.SECOND, random.nextInt(60));
-        calendar.set(Calendar.MILLISECOND, random.nextInt(1000));
         return calendar.getTime();
     }
 }

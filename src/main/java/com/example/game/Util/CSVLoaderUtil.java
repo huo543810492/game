@@ -96,8 +96,8 @@ public class CSVLoaderUtil {
         sales.setCostPrice(new BigDecimal(fields[5].replace("\"", "")));
         sales.setTax(new BigDecimal(fields[6].replace("\"", "")));
         sales.setSalePrice(new BigDecimal(fields[7].replace("\"", "")));
-        sales.setDate(dateFormat.parse(fields[8].replace("\"", "")));
-        sales.setCreate_time(dateFormat.parse(fields[9].replace("\"", "")));
+        sales.setDateOfSale(dateFormat.parse(fields[8].replace("\"", "")));
+        sales.setCreateTime(dateFormat.parse(fields[9].replace("\"", "")));
         return sales;
     }
 }

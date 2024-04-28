@@ -11,12 +11,7 @@
         <result column="cost_price" property="costPrice" jdbcType="DECIMAL"/>
         <result column="tax" property="tax" jdbcType="DECIMAL"/>
         <result column="sale_price" property="salePrice" jdbcType="DECIMAL"/>
-        <result column="date_of_sale" property="date"/>
-        <result column="create_time" property="create_time"/>
+        <result column="date_of_sale" property="dateOfSale" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
-
-    <select id="selectList" resultType="com.example.game.model.GameSales">
-        SELECT * from game_sales
-    </select>
-
 </mapper>
