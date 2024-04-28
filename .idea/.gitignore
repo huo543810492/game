@@ -1,8 +1,7 @@
 # Default ignored files
 /shelf/
 /workspace.xml
-# Ignore Java class files
 *.class
-
-# Ignore directory "target" and its contents
-/target/
+.idea
+*.iml
+*.jar
