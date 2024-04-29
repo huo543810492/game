@@ -14,4 +14,28 @@
         <result column="date_of_sale" property="dateOfSale" jdbcType="TIMESTAMP"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
+
+    <resultMap id="resultMapTotal" type="com.example.game.model.GameSalesVO">
+        <result column="totalSalesNo" property="totalSalesNo"/>
+        <result column="totalSalesAmount" property="totalSalesAmount"/>
+    </resultMap>
+
+    <select id="getTotalSales" resultMap="resultMapTotal">
+        SELECT
+        SUM(sale_price) AS totalSalesAmount,
+        COUNT(*) AS totalSalesNo
+        FROM
+        game_sales
+        <where>
+            <if test="gameNo != null">
+                game_no = #{gameNo}
+            </if>
+            <if test="saleDateGe != null">
+                <![CDATA[ and date_of_sale>= DATE_FORMAT(#{saleDateGe},"%Y-%m-%d") ]]>
+            </if>
+            <if test="saleDateLe != null">
+                <![CDATA[ and date_of_sale<= DATE_FORMAT(#{saleDateLe},"%Y-%m-%d") ]]>
+            </if>
+        </where>
+    </select>
 </mapper>

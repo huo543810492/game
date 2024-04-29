@@ -1,4 +1,4 @@
-package com.example.game.model;
+package com.example.game.form;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class GameSalesPageForm implements Serializable{
+public class GameTotalSalesForm implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -20,11 +20,5 @@ public class GameSalesPageForm implements Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date saleDateLe;
 
-    private int page;
-
-    private int size;
-
-    private BigDecimal priceLt;
-
-    private BigDecimal priceGt;
+    private Integer gameNo;
 }

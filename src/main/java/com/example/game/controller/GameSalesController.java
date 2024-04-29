@@ -2,8 +2,10 @@ package com.example.game.controller;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.game.form.GameTotalSalesForm;
 import com.example.game.model.GameSales;
-import com.example.game.model.GameSalesPageForm;
+import com.example.game.form.GameSalesPageForm;
+import com.example.game.model.GameSalesVO;
 import com.example.game.service.GameSalesDataService;
 import com.example.game.service.GameSalesService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,5 +43,16 @@ public class GameSalesController {
     @GetMapping ("/import")
     public void importCSVFile(){
         gameSalesDataService.importCSVFile();
+    }
+
+    @PostMapping ("/getTotalSales")
+    public GameSalesVO getTotalSales(@RequestBody GameTotalSalesForm form){
+        StopWatch watch = new StopWatch();
+        watch.start();
+        log.info(Thread.currentThread().getName() + " start query getTotalSales");
+        GameSalesVO totalSalesVO = gameSalesService.getTotalSales(form);
+        watch.stop();
+        log.info(Thread.currentThread().getName() + " query getTotalSales done, cost - {} ms" , watch.getTotalTimeMillis());
+        return totalSalesVO;
     }
 }
