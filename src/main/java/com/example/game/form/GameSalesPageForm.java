@@ -20,9 +20,9 @@ public class GameSalesPageForm implements Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date saleDateLe;
 
-    private int page;
+    private int page = 1;
 
-    private int size;
+    private int size = 100;
 
     private BigDecimal priceLt;
 
