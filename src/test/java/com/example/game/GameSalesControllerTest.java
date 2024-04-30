@@ -3,6 +3,7 @@ package com.example.game;
 import com.example.game.form.GameSalesPageForm;
 import com.example.game.form.GameTotalSalesForm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * test performance
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class GameSalesControllerTest {
@@ -57,10 +61,10 @@ public class GameSalesControllerTest {
         mockMvc.perform(post("/gameSales/getGameSales")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(jsonContent))
-               .andExpect(status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.records", hasSize(100))) // test pagination
-               .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(ONE_MILLION)); // test totalRecords
-
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.size").value(100)) // test pagination
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.total").value(ONE_MILLION))// test totalRecords
+               .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ok"));
         long endTime = System.currentTimeMillis();
         assertTrue(endTime - startTime < ONE_SECOND, "GetGameSales took longer than expected.");
 
@@ -72,8 +76,10 @@ public class GameSalesControllerTest {
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(jsonContent))
                .andExpect(status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.records", hasSize(110))) // test pagination
-               .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(ONE_MILLION)); // test totalRecords
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.size").value(110)) // test pagination
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.total").value(ONE_MILLION))// test totalRecords
+               .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ok"));
     }
 
 
@@ -81,7 +87,7 @@ public class GameSalesControllerTest {
     public void testGetGameSalesDateQuery() throws Exception {
         GameSalesPageForm form = new GameSalesPageForm(); // Assuming this class has setters
         form.setSaleDateGe(convertToDate("2024-04-21 00:00:17"));
-        form.setSaleDateLe(convertToDate("2024-04-31 17:43:17"));
+        form.setSaleDateLe(convertToDate("2024-04-25 17:43:17"));
 
         String jsonContent = asJsonString(form);
 
@@ -89,8 +95,9 @@ public class GameSalesControllerTest {
         mockMvc.perform(post("/gameSales/getGameSales")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(jsonContent))
-               .andExpect(status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.total", lessThan(ONE_MILLION))); // test totalRecords
+               .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ok"))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.total", lessThan(ONE_MILLION))); // test totalRecords
 
         long endTime = System.currentTimeMillis();
         assertTrue(endTime - startTime < ONE_SECOND, "GetGameSales took longer than expected.");
@@ -107,8 +114,9 @@ public class GameSalesControllerTest {
         mockMvc.perform(post("/gameSales/getGameSales")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(jsonContent))
-               .andExpect(status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(ONE_MILLION));
+               .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ok"))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.total").value(ONE_MILLION));
 
         // test api with a different price range
         form.setPriceLt(new BigDecimal(10));
@@ -116,8 +124,9 @@ public class GameSalesControllerTest {
         mockMvc.perform(post("/gameSales/getGameSales")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(jsonContent))
-               .andExpect(status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.total", lessThan(ONE_MILLION)));
+               .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ok"))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.total", lessThan(ONE_MILLION)));
     }
 
     @Test
@@ -131,8 +140,9 @@ public class GameSalesControllerTest {
         mockMvc.perform(post("/gameSales/getTotalSales")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(jsonContent))
-               .andExpect(status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.totalSalesNo", greaterThan(0)));
+               .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ok"))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.totalSalesNo", greaterThan(0)));
 
         long endTime = System.currentTimeMillis();
         assertTrue(endTime - startTime < ONE_SECOND, "GetTotalSales took longer than expected.");
@@ -143,8 +153,9 @@ public class GameSalesControllerTest {
         mockMvc.perform(post("/gameSales/getTotalSales")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(jsonContent))
-               .andExpect(status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.totalSalesNo").value(0));
+               .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ok"))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.data.totalSalesNo").value(0));
     }
 
     private String asJsonString(final Object obj) {
