@@ -28,10 +28,10 @@ public class GameSalesController {
     public IPage<GameSales> page(@RequestBody GameSalesPageForm form){
         StopWatch watch = new StopWatch();
         watch.start();
-        log.info(Thread.currentThread().getName() + " start query getGameSales");
+        log.info(STR."\{Thread.currentThread().getName()} start query getGameSales");
         IPage<GameSales> page = gameSalesService.getGameSales(form);
         watch.stop();
-        log.info(Thread.currentThread().getName() + " query getGameSales done, cost - {} ms" , watch.getTotalTimeMillis());
+        log.info(STR."\{Thread.currentThread().getName()} query getGameSales done, cost - {} ms", watch.getTotalTimeMillis());
         return page;
     }
 
@@ -49,10 +49,10 @@ public class GameSalesController {
     public GameSalesVO getTotalSales(@RequestBody GameTotalSalesForm form){
         StopWatch watch = new StopWatch();
         watch.start();
-        log.info(Thread.currentThread().getName() + " start query getTotalSales");
+        log.info(STR."\{Thread.currentThread().getName()} start query getTotalSales");
         GameSalesVO totalSalesVO = gameSalesService.getTotalSales(form);
         watch.stop();
-        log.info(Thread.currentThread().getName() + " query getTotalSales done, cost - {} ms" , watch.getTotalTimeMillis());
+        log.info(STR."\{Thread.currentThread().getName()} query getTotalSales done, cost - {} ms", watch.getTotalTimeMillis());
         return totalSalesVO;
     }
 }

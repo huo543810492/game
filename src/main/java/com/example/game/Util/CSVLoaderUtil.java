@@ -40,60 +40,51 @@ public class CSVLoaderUtil {
 
     @Transactional(rollbackFor = Exception.class)
     public void loadCSVInBatch() {
-        InputStream inputStream = CSVLoaderUtil.class.getClassLoader().getResourceAsStream("game_sales.csv");
-        ExecutorService executor = Executors.newFixedThreadPool(100);
-
-        int count = 0;
-        try {
+        ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+        List<Future<?>> futures = new ArrayList<>();
+        try (
+            InputStream inputStream = CSVLoaderUtil.class.getClassLoader().getResourceAsStream("game_sales.csv");
+            CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(inputStream)).build();
+        ){
             if (inputStream == null) {
                 throw new RuntimeException("Cannot find 'game_sales.csv'");
             }
-
             List<GameSales> salesRecords = new ArrayList<>();
-            List<Future<?>> futures = new ArrayList<>();
-
-            try (CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(inputStream)).build()) {
-                String[] nextRecord;
-                log.info(Thread.currentThread().getName() + " start load csv file, one batch");
-                Long startId = 0L;
-                while ((nextRecord = csvReader.readNext()) != null) {
-                    GameSales sales = mapToGameSales(nextRecord);
-                    salesRecords.add(sales);
-                    //track csv Import Status
-                    if(count==0){
-                        startId = sales.getId();
-                    }
-                    count++;
-                    if (count >= BATCH_SIZE) {
-                        submitBatch(executor, salesRecords, futures, startId, sales.getId());
-                        salesRecords.clear();
-                        count = 0;
-                        log.info(Thread.currentThread().getName() + " load csv file one batch done");
-                    }
+            String[] nextRecord;
+            log.info(STR."\{Thread.currentThread().getName()} start load csv file, one batch");
+            Long startId = 0L;
+            int count = 0;
+            while ((nextRecord = csvReader.readNext()) != null) {
+                GameSales sales = mapToGameSales(nextRecord);
+                salesRecords.add(sales);
+                //track csv Import Status
+                if(count==0){
+                    startId = sales.getId();
                 }
-
-                futures.parallelStream().forEach(future -> {
-                    try {
-                        future.get();
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                    }
-                });
-                log.info(Thread.currentThread().getName() + " load csv file whole batch done");
+                count++;
+                if (count >= BATCH_SIZE) {
+                    submitBatch(executor, salesRecords, futures, startId, sales.getId());
+                    salesRecords.clear();
+                    count = 0;
+                    log.info(STR."\{Thread.currentThread().getName()} load csv file one batch done");
+                }
             }
-        } catch (IOException | CsvValidationException | ParseException e) {
-            log.warn("-----> catch loadCSVInBatch exception  - {}", e.toString());
+            // CSV file read done
+            futures.parallelStream().forEach(future -> {
+                try {
+                    future.get();
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+            });
+            log.info(STR."\{Thread.currentThread().getName()} load csv file whole batch done");
+        } catch (Exception e) {
+            log.error("-----> catch loadCSVInBatch exception  - {}", e.toString());
         } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                executor.shutdown();
-                log.info(Thread.currentThread().getName() + " Executor shut down");
-            } catch (IOException e) {
-                e.printStackTrace();
+            executor.shutdown();
+            log.info(STR."\{Thread.currentThread().getName()} Executor shut down");
             }
-        }
     }
 
 

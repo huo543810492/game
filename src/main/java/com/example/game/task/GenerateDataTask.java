@@ -4,7 +4,6 @@ import com.example.game.model.GameSales;
 import com.example.game.service.GameSalesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -18,11 +17,10 @@ public class GenerateDataTask {
     @Autowired
     GameSalesService gameSalesService;
 
-    @Async
     public void start() {
         StopWatch watch = new StopWatch();
         watch.start();
-        log.info(Thread.currentThread().getName() + " start batch insertion");
+        log.info(STR."\{Thread.currentThread().getName()} start batch insertion");
         final int DEFAULT_BATCH_SIZE = 10000;
         List<GameSales> batch = new ArrayList<>();
         Random random = new Random();
@@ -42,7 +40,7 @@ public class GenerateDataTask {
             batch.add(salesRecord);
         }
         watch.stop();
-        log.info(Thread.currentThread().getName() + " one batch done, cost " + watch.getTotalTimeMillis() + " ms");
+        log.info(STR."\{Thread.currentThread().getName()} one batch done, cost \{watch.getTotalTimeMillis()} ms");
         gameSalesService.saveBatch(batch);
     }
 

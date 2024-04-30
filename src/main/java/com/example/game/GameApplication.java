@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.example.game.dao")
 @SpringBootApplication
 @EnableTransactionManagement
-@EnableAsync
 public class GameApplication {
 
 	public static void main(String[] args) {

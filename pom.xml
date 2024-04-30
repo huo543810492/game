@@ -64,6 +64,12 @@
 			<artifactId>opencsv</artifactId>
 			<version>5.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.32</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -89,9 +95,9 @@
 					<source>21</source>
 					<target>21</target>
 					<encoding>UTF-8</encoding>
-<!--					<compilerArgs>-->
-<!--						<compilerArg>&#45;&#45;enable-preview</compilerArg>-->
-<!--					</compilerArgs>-->
+					<compilerArgs>
+						<compilerArg>--enable-preview</compilerArg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
