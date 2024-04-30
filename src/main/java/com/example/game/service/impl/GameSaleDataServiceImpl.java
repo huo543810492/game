@@ -26,14 +26,15 @@ public class GameSaleDataServiceImpl implements GameSalesDataService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void generateData() {
-        ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+        ThreadFactory factory = Thread.ofVirtual().name("my-virtual-thread-", 1).factory();
+        ExecutorService executor = Executors.newThreadPerTaskExecutor(factory);
         try {
             StopWatch watch = new StopWatch();
             watch.start();
             List<Future<?>> futures = new ArrayList<>();
-            log.info(STR."\{Thread.currentThread().getName()} start whole batch insertion");
+            log.info("{} start whole batch insertion", Thread.currentThread().getName());
             for (int i = 0; i < 100; i++) {
-                futures.add(executorService.submit(()->generateDataTask.start()));
+                futures.add(executor.submit(()->generateDataTask.start()));
             }
             futures.parallelStream().forEach(future -> {
                 try {
@@ -44,21 +45,21 @@ public class GameSaleDataServiceImpl implements GameSalesDataService {
                 }
             });
             watch.stop();
-            log.info(STR."\{Thread.currentThread().getName()} whole batch done, cost - {} ms", watch.getTotalTimeMillis());
+            log.info("{} whole batch done, cost - {} ms",Thread.currentThread().getName(), watch.getTotalTimeMillis());
         }catch(Exception e){
             log.error("-----> catch generateData exception  - {}", e.toString());
         }finally {
-            executorService.shutdown();
-            log.info(STR."\{Thread.currentThread().getName()} Executor shut down");
+            executor.shutdown();
+            log.info("{} Executor shut down", Thread.currentThread().getName());
         }
     }
 
     public void importCSVFile() {
         StopWatch watch = new StopWatch();
         watch.start();
-        log.info(STR."\{Thread.currentThread().getName()} start import CSVFile");
+        log.info("{} start import CSVFile", Thread.currentThread().getName());
         csvLoaderUtil.loadCSVInBatch();
         watch.stop();
-        log.info(STR."\{Thread.currentThread().getName()} import CSVFile done, cost - {} ms", watch.getTotalTimeMillis());
+        log.info("{} import CSVFile done, cost - {} ms",Thread.currentThread().getName(), watch.getTotalTimeMillis());
     }
 }

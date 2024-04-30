@@ -6,12 +6,10 @@ import com.example.game.model.GameSales;
 import com.example.game.service.GameSalesService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -23,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 @Slf4j
 @Component
@@ -40,7 +39,8 @@ public class CSVLoaderUtil {
 
     @Transactional(rollbackFor = Exception.class)
     public void loadCSVInBatch() {
-        ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+        ThreadFactory factory = Thread.ofVirtual().name("my-virtual-thread-", 1).factory();
+        ExecutorService executor = Executors.newThreadPerTaskExecutor(factory);
         List<Future<?>> futures = new ArrayList<>();
         try (
             InputStream inputStream = CSVLoaderUtil.class.getClassLoader().getResourceAsStream("game_sales.csv");
@@ -51,7 +51,6 @@ public class CSVLoaderUtil {
             }
             List<GameSales> salesRecords = new ArrayList<>();
             String[] nextRecord;
-            log.info(STR."\{Thread.currentThread().getName()} start load csv file, one batch");
             Long startId = 0L;
             int count = 0;
             while ((nextRecord = csvReader.readNext()) != null) {
@@ -66,7 +65,6 @@ public class CSVLoaderUtil {
                     submitBatch(executor, salesRecords, futures, startId, sales.getId());
                     salesRecords.clear();
                     count = 0;
-                    log.info(STR."\{Thread.currentThread().getName()} load csv file one batch done");
                 }
             }
             // CSV file read done
@@ -78,13 +76,13 @@ public class CSVLoaderUtil {
                     throw new RuntimeException(e);
                 }
             });
-            log.info(STR."\{Thread.currentThread().getName()} load csv file whole batch done");
+            log.info("{} load csv file whole batch done", Thread.currentThread().getName());
         } catch (Exception e) {
             log.error("-----> catch loadCSVInBatch exception  - {}", e.toString());
         } finally {
             executor.shutdown();
-            log.info(STR."\{Thread.currentThread().getName()} Executor shut down");
-            }
+            log.info("{} Executor shut down", Thread.currentThread().getName());
+        }
     }
 
 
@@ -95,8 +93,12 @@ public class CSVLoaderUtil {
         csvImportStatus.setEndId(endId);
         csvImportStatus.setCreateTime(new Date());
         csvImportStatusDao.insert(csvImportStatus);
-        futures.add(executor.submit(() -> gameSalesServiceImpl.saveBatch(batch)));
-        log.info("Submitted a batch for processing.");
+
+        futures.add(executor.submit(() -> {
+            log.info("{} start load csv file, one batch", Thread.currentThread().getName());
+            gameSalesServiceImpl.saveBatch(batch);
+            log.info("{} load csv file one batch done", Thread.currentThread().getName());
+        }));
     }
 
     private GameSales mapToGameSales(String[] fields) throws ParseException {

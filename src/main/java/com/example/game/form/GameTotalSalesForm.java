@@ -1,11 +1,11 @@
 package com.example.game.form;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -20,5 +20,6 @@ public class GameTotalSalesForm implements Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date saleDateLe;
 
+    @Min(1)
     private Integer gameNo;
 }

@@ -1,6 +1,8 @@
 package com.example.game.form;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,11 +22,15 @@ public class GameSalesPageForm implements Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date saleDateLe;
 
+    @Min(1)
     private int page = 1;
 
+    @Min(1)
     private int size = 100;
 
+    @DecimalMin(value = "0.0", inclusive = false, message = "Pram priceLessThan must be greater than 0")
     private BigDecimal priceLt;
 
+    @DecimalMin(value = "0.0", message = "Pram priceGreaterThan must be greater than or equal 0")
     private BigDecimal priceGt;
 }

@@ -20,7 +20,7 @@ public class GenerateDataTask {
     public void start() {
         StopWatch watch = new StopWatch();
         watch.start();
-        log.info(STR."\{Thread.currentThread().getName()} start batch insertion");
+        log.info("{} start batch insertion", Thread.currentThread().getName());
         final int DEFAULT_BATCH_SIZE = 10000;
         List<GameSales> batch = new ArrayList<>();
         Random random = new Random();
@@ -40,7 +40,7 @@ public class GenerateDataTask {
             batch.add(salesRecord);
         }
         watch.stop();
-        log.info(STR."\{Thread.currentThread().getName()} one batch done, cost \{watch.getTotalTimeMillis()} ms");
+        log.info("{}  one batch done, cost - {} ms",Thread.currentThread().getName(), watch.getTotalTimeMillis());
         gameSalesService.saveBatch(batch);
     }
 
