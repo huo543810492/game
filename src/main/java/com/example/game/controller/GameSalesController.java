@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/gameSales")
@@ -27,7 +28,7 @@ public class GameSalesController {
     GameSalesDataService gameSalesDataService;
 
     @PostMapping ("/getGameSales")
-    public ResultMsg page(@RequestBody @Valid GameSalesPageForm form){
+    public ResultMsg page(@RequestBody @Valid GameSalesPageForm form) {
         try {
             StopWatch watch = new StopWatch();
             watch.start();
@@ -75,4 +76,11 @@ public class GameSalesController {
             return ResultMsg.failure(e.getMessage());
         }
     }
+
+    // test Global ExceptionHandler expect message "Request method 'test' is not supported"
+//    @PostMapping ("/getGameSales")
+//    public ResultMsg testExceptionHandler(@RequestBody  GameSalesPageForm form) throws HttpRequestMethodNotSupportedException {
+//        IPage<GameSales> page = gameSalesService.getGameSales(form);
+//        throw new HttpRequestMethodNotSupportedException("test");
+//    }
 }
