@@ -1,6 +1,6 @@
 # Common Server Configuration
 server:
-  port: 8080
+  port: 8085
   servlet:
     context-path: /game
   tomcat:
@@ -13,7 +13,20 @@ spring:
     url: jdbc:mysql://localhost:3306/game?useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: 123456789
+  jpa:
+    show-sql: true
 
 mybatis-plus:
   config-location: classpath:mybatis/mybatis-config.xml
   mapper-locations: classpath*:/mapper/*.xml
+
+logging:
+  level:
+    org:
+      springframework: WARN
+    com:
+      example:
+        game:
+          dao: DEBUG
+  file:
+    name: logs/spring-boot-logging.log

@@ -38,4 +38,24 @@
             </if>
         </where>
     </select>
+
+    <select id="selectGameSalesWithFilters" resultType="long">
+        SELECT id
+        FROM game_sales
+        <where>
+            <if test="priceLt != null">
+                <![CDATA[ and sale_price < #{priceLt} ]]>
+            </if>
+            <if test="priceGt != null">
+                <![CDATA[ and sale_price > #{priceGt} ]]>
+            </if>
+            <if test="saleDateLe != null">
+                <![CDATA[ and date_of_sale<= DATE_FORMAT(#{saleDateLe},"%Y-%m-%d") ]]>
+            </if>
+            <if test="saleDateGe != null">
+                <![CDATA[ and date_of_sale>= DATE_FORMAT(#{saleDateGe},"%Y-%m-%d") ]]>
+            </if>
+        </where>
+        LIMIT #{page}, #{size}
+    </select>
 </mapper>

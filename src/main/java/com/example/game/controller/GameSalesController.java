@@ -16,6 +16,8 @@ import org.springframework.util.StopWatch;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/gameSales")
 @RestController
 @Slf4j
@@ -33,7 +35,7 @@ public class GameSalesController {
             StopWatch watch = new StopWatch();
             watch.start();
             log.info("{} start query getGameSales", Thread.currentThread().getName());
-            IPage<GameSales> page = gameSalesService.getGameSales(form);
+            List<GameSales> page = gameSalesService.getGameSales(form);
             watch.stop();
             log.info("{} query getGameSales done, cost - {} ms",Thread.currentThread().getName(), watch.getTotalTimeMillis());
             return ResultMsg.success(page);

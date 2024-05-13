@@ -7,9 +7,11 @@ import com.example.game.model.GameSales;
 import com.example.game.form.GameSalesPageForm;
 import com.example.game.model.GameSalesVO;
 
+import java.util.List;
+
 public interface GameSalesService extends IService<GameSales> {
 
-    IPage<GameSales> getGameSales(GameSalesPageForm form);
+    List<GameSales> getGameSales(GameSalesPageForm form);
 
     GameSalesVO getTotalSales(GameTotalSalesForm form);
 
