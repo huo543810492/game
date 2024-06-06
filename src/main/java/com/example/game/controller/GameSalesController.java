@@ -79,6 +79,11 @@ public class GameSalesController {
         }
     }
 
+    @GetMapping ("/testTransaction")
+    public void testTransaction(){
+        gameSalesService.testTransaction();
+    }
+
     // test Global ExceptionHandler expect message "Request method 'test' is not supported"
 //    @PostMapping ("/getGameSales")
 //    public ResultMsg testExceptionHandler(@RequestBody  GameSalesPageForm form) throws HttpRequestMethodNotSupportedException {

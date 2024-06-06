@@ -10,8 +10,11 @@ import com.example.game.service.GameSalesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StopWatch;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
 
 import java.util.List;
 
@@ -52,5 +55,14 @@ public class GameSalesServiceImpl extends ServiceImpl<GameSalesDao, GameSales> i
     public GameSalesVO getTotalSales(GameTotalSalesForm form) {
         GameSalesVO totalSales = gameSalesDao.getTotalSales(form.getSaleDateGe(), form.getSaleDateLe(), form.getGameNo());
         return totalSales;
+    }
+
+    @Override
+    @Transactional
+    public void testTransaction() {
+        System.out.println("Testing if transaction works without any database operations");
+        boolean actualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
+        System.out.println("Is transaction active: " + actualTransactionActive);
+
     }
 }

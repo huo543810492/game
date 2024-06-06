@@ -15,4 +15,6 @@ public interface GameSalesService extends IService<GameSales> {
 
     GameSalesVO getTotalSales(GameTotalSalesForm form);
 
+    void testTransaction();
+
 }
